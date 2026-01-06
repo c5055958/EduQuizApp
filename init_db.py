@@ -1,0 +1,71 @@
+import sqlite3
+
+conn = sqlite3.connect("database.db")
+c = conn.cursor()
+
+# Users table with profile_image column
+c.execute("""
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL,
+    email_verified INTEGER DEFAULT 1,
+    email_otp TEXT,
+    profile_image TEXT
+)
+""")
+
+# Modules table
+c.execute("""
+CREATE TABLE IF NOT EXISTS modules (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
+)
+""")
+
+# Quizzes table
+c.execute("""
+CREATE TABLE IF NOT EXISTS quizzes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    module_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    time_limit INTEGER,
+    is_active INTEGER DEFAULT 0,
+    FOREIGN KEY (module_id) REFERENCES modules(id)
+)
+""")
+
+# Questions table
+c.execute("""
+CREATE TABLE IF NOT EXISTS questions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    quiz_id INTEGER NOT NULL,
+    question TEXT NOT NULL,
+    option1 TEXT NOT NULL,
+    option2 TEXT NOT NULL,
+    option3 TEXT NOT NULL,
+    option4 TEXT NOT NULL,
+    correct_option INTEGER NOT NULL,
+    FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
+)
+""")
+
+# Attempts table with answers column (JSON)
+c.execute("""
+CREATE TABLE IF NOT EXISTS attempts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id INTEGER NOT NULL,
+    quiz_id INTEGER NOT NULL,
+    score INTEGER,
+    total_questions INTEGER,
+    answers TEXT,
+    FOREIGN KEY (student_id) REFERENCES users(id),
+    FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
+)
+""")
+
+conn.commit()
+conn.close()
+print("Database initialized successfully with profile_image column!")

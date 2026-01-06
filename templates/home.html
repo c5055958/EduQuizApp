@@ -1,0 +1,472 @@
+{% extends "base.html" %}
+{% block title %}EduQuizHub | Learn • Quiz • Analyze{% endblock %}
+
+{% block content %}
+
+<style>
+/* ===== RESET ===== */
+html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ===== INNER WRAPPER ===== */
+.inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* ================= NAVBAR ================= */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    margin: 0;
+    padding: 0;
+}
+
+/* ================= HERO ================= */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+    background: linear-gradient(-45deg,#4e73df,#1cc88a,#6f42c1,#36b9cc);
+    background-size: 400% 400%;
+    animation: gradientMove 12s ease infinite;
+    margin: 0;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.hero h1 {
+    font-size: 3.8rem;
+    font-weight: 900;
+}
+
+.hero p {
+    font-size: 1.3rem;
+    margin-bottom: 40px;
+}
+
+/* Buttons */
+.hero-btn {
+    padding: 16px 48px;
+    border-radius: 60px;
+    font-weight: 900;
+    transition: 0.4s;
+    text-decoration: none;
+}
+
+.hero-btn:hover {
+    transform: translateY(-8px) scale(1.12);
+}
+
+.btn-login {
+    background: #fff;
+    color: #1e3a8a;
+}
+
+.btn-register {
+    background: #111827;
+    color: #fff;
+}
+
+/* ================= STATS ================= */
+.stats {
+    background: #ffffff;
+    padding: 60px 0;
+}
+
+.stat-card {
+    background: #fff;
+    padding: 45px 25px;
+    border-radius: 30px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    transition: 0.4s;
+}
+
+.stat-card:hover {
+    transform: translateY(-15px) scale(1.08);
+}
+
+.stat-number {
+    font-size: 3.2rem;
+    font-weight: 900;
+    color: #4e73df;
+}
+
+/* ================= FEATURES ================= */
+.features {
+    background: #f4f6fb;
+    padding: 60px 0;
+}
+
+.feature-card {
+    background: #fff;
+    padding: 45px 30px;
+    border-radius: 30px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.12);
+    transition: 0.4s;
+}
+
+.feature-card:hover {
+    transform: translateY(-12px) scale(1.06);
+}
+
+/* ================= HOW IT WORKS ================= */
+.steps {
+    background: #ffffff;
+    padding: 60px 0;
+}
+
+.step {
+    text-align: center;
+    padding: 30px;
+}
+
+.step span {
+    font-size: 3.2rem;
+}
+
+/* ================= TESTIMONIALS ================= */
+.testimonials {
+    background: #f9fafb;
+    padding: 60px 0;
+}
+
+.testimonial {
+    background: #fff;
+    padding: 40px;
+    border-radius: 30px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.12);
+}
+
+/* ================= FAQ ================= */
+.faq {
+    background: #ffffff;
+    padding: 60px 0;
+}
+
+.faq-item {
+    background: #f4f6fb;
+    padding: 20px 25px;
+    border-radius: 18px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.faq-item strong {
+    display: block;
+}
+
+.faq-item p {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    margin: 0;
+}
+
+.faq-item.active {
+    background: #e2e8f0;
+}
+
+.faq-item.active p {
+    max-height: 500px;
+    margin-top: 10px;
+}
+
+/* ================= CTA ================= */
+.cta {
+    background: linear-gradient(135deg,#111827,#1f2937);
+    color: #fff;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.cta-btn {
+    padding: 16px 50px;
+    border-radius: 60px;
+    background: #22c55e;
+    color: #fff;
+    font-weight: 900;
+    text-decoration: none;
+    transition: 0.4s;
+}
+
+.cta-btn:hover {
+    transform: translateY(-10px) scale(1.15);
+}
+
+/* ================= FOOTER ================= */
+.footer {
+    width: 100%;
+    background: #0f172a;
+    color: #9ca3af;
+    text-align: center;
+    padding: 45px 20px;
+}
+
+.footer a {
+    color: #22c55e;
+    text-decoration: none;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.6rem;
+    }
+}
+
+/* ===== BUTTON STYLING ===== */
+.hero-btn {
+    padding: 14px 50px;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.4s ease;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-btn::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255,255,255,0.3);
+    transition: all 0.4s ease;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.hero-btn:hover::after {
+    width: 300%;
+    height: 300%;
+}
+
+.btn-login {
+    background: linear-gradient(135deg,#4e73df,#36b9cc);
+    color: #fff;
+}
+
+.btn-register {
+    background: linear-gradient(135deg,#1cc88a,#22c55e);
+    color: #fff;
+}
+
+.hero-btn:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+}
+
+/* CTA BUTTON */
+.cta-btn {
+    padding: 16px 55px;
+    border-radius: 50px;
+    font-weight: 700;
+    background: linear-gradient(135deg,#4e73df,#6f42c1);
+    color: #fff;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.4s ease;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-btn::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255,255,255,0.2);
+    transition: all 0.4s ease;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.cta-btn:hover::after {
+    width: 300%;
+    height: 300%;
+}
+
+.cta-btn:hover {
+    transform: translateY(-6px) scale(1.08);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+</style>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+    <div class="inner">
+        <h1>EduQuizHub 🎓</h1>
+        <p>Learn smarter • Quiz better • Analyze faster</p>
+        <div class="d-flex justify-content-center gap-4">
+            <a href="{{ url_for('login') }}" class="hero-btn btn-login">Login</a>
+            <a href="{{ url_for('register') }}" class="hero-btn btn-register">Get Started</a>
+        </div>
+    </div>
+</section>
+
+<!-- ================= STATS ================= -->
+<section class="stats">
+    <div class="inner">
+        <div class="row text-center g-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_modules }}</div>
+                    <p>Modules Created</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_quizzes }}</div>
+                    <p>Quizzes Available</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_students }}</div>
+                    <p>Active Students</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= FEATURES ================= -->
+<section class="features">
+    <div class="inner text-center">
+        <h2 class="fw-bold mb-5">Why EduQuizHub?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <h5>📚 Modules</h5>
+                    <p>Organize learning content easily.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <h5>📝 Quizzes</h5>
+                    <p>Auto-evaluate instantly.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <h5>📊 Analytics</h5>
+                    <p>Visual performance insights.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="steps">
+    <div class="inner text-center">
+        <h2 class="fw-bold mb-5">How It Works</h2>
+        <div class="row g-4">
+            <div class="col-md-4 step">
+                <span>1️⃣</span>
+                <h5>Register</h5>
+                <p>Create your account</p>
+            </div>
+            <div class="col-md-4 step">
+                <span>2️⃣</span>
+                <h5>Attempt</h5>
+                <p>Take quizzes module-wise</p>
+            </div>
+            <div class="col-md-4 step">
+                <span>3️⃣</span>
+                <h5>Analyze</h5>
+                <p>Track performance visually</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= TESTIMONIALS ================= -->
+<section class="testimonials">
+    <div class="inner text-center">
+        <h2 class="fw-bold mb-5">What Students Say</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="testimonial">"Very intuitive platform!"</div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial">"Loved the analytics section."</div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial">"Best quiz system I've used."</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="faq">
+    <div class="inner">
+        <h2 class="fw-bold text-center mb-5">FAQs</h2>
+
+        <div class="faq-item">
+            <strong>Is it free?</strong>
+            <p>Yes, students can use it for free.</p>
+        </div>
+
+        <div class="faq-item">
+            <strong>Are results saved?</strong>
+            <p>All attempts are stored securely.</p>
+        </div>
+
+        <div class="faq-item">
+            <strong>Can admins manage quizzes?</strong>
+            <p>Yes, admins have full control.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="cta">
+    <div class="inner">
+        <h2 class="fw-bold mb-4">Start Learning Today 🚀</h2>
+        <a href="{{ url_for('register') }}" class="cta-btn">Create Free Account</a>
+    </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+    <p>© 2025 EduQuizHub. All rights reserved.</p>
+</footer>
+
+<script>
+// FAQ Accordion
+document.querySelectorAll('.faq-item').forEach(item => {
+    item.addEventListener('click', () => {
+        item.classList.toggle('active');
+    });
+});
+</script>
+
+{% endblock %}
