@@ -165,7 +165,7 @@
                 <!-- Profile Image -->
                 <td>
                     {% if student.profile_image %}
-                        <img src="{{ url_for('static', filename='uploads/' + student.profile_image) }}" 
+                        <img src="{{ url_for('static', filename='images/profiles/' + student.profile_image) }}" 
                              alt="Profile Image" class="profile-img">
                     {% else %}
                         <img src="{{ url_for('static', filename='uploads/default.png') }}" 

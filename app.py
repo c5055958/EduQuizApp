@@ -745,6 +745,7 @@ def delete_student(student_id):
     return redirect(url_for("admin_students"))
 
 
+
 @app.route("/admin/student/<int:student_id>")
 def admin_student_detail(student_id):
     if session.get("role") != "admin":

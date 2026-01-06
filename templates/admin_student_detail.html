@@ -1,157 +1,228 @@
 {% extends "base.html" %}
-{% block title %}Admin Statistics{% endblock %}
+{% block title %}Student Details{% endblock %}
 
 {% block content %}
 <style>
     body { 
         background: linear-gradient(135deg,#667eea,#764ba2); 
         min-height:100vh; 
-        color:#333; 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #fff;
     }
-    h3 { 
+
+    h3, h4, h5 { font-weight:700; }
+    h3 { text-align:center; margin-bottom:20px; }
+    h4 { margin-top:30px; margin-bottom:15px; text-decoration:underline; }
+
+    .btn-back, .btn-chart { 
+        background: linear-gradient(135deg,#6c63ff,#4e54c8); 
         color:#fff; 
-        font-weight:800; 
-        text-align:center; 
-        margin-bottom:40px; 
-        text-shadow:0 3px 6px rgba(0,0,0,0.3);
+        border:none; 
+        padding:10px 25px; 
+        border-radius:30px; 
+        font-weight:600; 
+        text-decoration:none; 
+        margin:5px; 
+        display:inline-block; 
+        transition: all 0.3s ease;
     }
-    .charts-container { 
-        display:flex; 
-        flex-wrap:wrap; 
-        justify-content:center; 
-        gap:30px; 
-        margin-top:30px;
+    .btn-back:hover, .btn-chart:hover { 
+        transform: scale(1.05);
+        background: linear-gradient(135deg,#4e54c8,#6c63ff);
     }
-    .chart-card { 
+
+    .card-center { 
         background:#fff; 
-        color:#333; 
         border-radius:22px; 
         padding:25px; 
         box-shadow:0 20px 40px rgba(0,0,0,0.2); 
-        width:500px; 
-        margin-bottom:20px;
-    }
-    .chart-card h5 { 
-        margin-bottom:20px; 
+        color:#333;
+        max-width:600px;
+        margin: 40px auto;
         text-align:center;
     }
-    .btn-back {
-        margin: 20px auto 0 auto;
-        border-radius: 30px;
-        padding: 12px 28px;
-        font-weight: 600;
-        font-size: 16px;
-        text-decoration: none;
-        color: #fff;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        box-shadow: 0 10px 25px rgba(102,126,234,0.45);
-        transition: all 0.35s ease;
-        text-align: center;
+
+    .btn-group { display:flex; justify-content:center; gap:15px; flex-wrap:wrap; margin-top:15px; }
+
+    .table-container {
+        background:#fff; 
+        padding:20px; 
+        border-radius:22px; 
+        box-shadow:0 20px 40px rgba(0,0,0,0.2);
+        margin-bottom:30px;
+        color:#333;
+        max-height: 250px; /* Keep table fixed in height */
+        overflow-y: auto; /* Scroll table if too long */
     }
 
-    .btn-back:hover {
-        transform: translateY(-2px) scale(1.05);
-        background: linear-gradient(135deg, #764ba2, #667eea);
-        box-shadow: 0 15px 30px rgba(118,75,162,0.6);
-        color: #fff;
-        text-decoration: none;
+    table { width:100%; border-collapse:collapse; }
+    th, td { padding:12px 15px; text-align:left; }
+    th { background: linear-gradient(135deg,#667eea,#764ba2); color:#fff; font-weight:700; }
+    tr:nth-child(even) { background:#f4f4f4; }
+    tr:hover { background:#e0e7ff; transition:0.2s; }
+
+    /* Modal styling */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0; top: 0;
+        width: 100%; height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.6);
+    }
+    .modal-content {
+        background: #fff;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 20px;
+        max-width: 700px;
+        color: #333;
+        position: relative;
+    }
+    .close {
+        position: absolute;
+        top: 10px; right: 15px;
+        font-size: 25px;
+        font-weight: bold;
+        color: #333;
+        cursor: pointer;
     }
 </style>
 
-<!-- Button at the top -->
-<a href="{{ url_for('admin_info') }}" class="btn btn-back">Back to Admin Info</a>
+<div class="container mt-4">
+    <!-- Back Button -->
+    <a href="{{ url_for('admin_students') }}" class="btn-back">⬅ Back to Students</a>
 
-<h3>Admin Statistics & Performance</h3>
+    <!-- Center Card for Student Summary -->
+    <div class="card-center">
+        <h3>{{ student.name }}</h3>
+        <p>Email: {{ student.email }}</p>
+        <h5>Total Quizzes Attempted: {{ total_quizzes }}</h5>
+        <h5>Total Marks: {{ total_score }} / {{ total_possible_score }}</h5>
+        <h5>Overall Percentage: {{ overall_percentage }}%</h5>
 
-<div class="charts-container">
-    <!-- Module Performance -->
-    <div class="chart-card">
-        <h5>Average Score per Module</h5>
+        <!-- Buttons for Chart Popups -->
+        <div class="btn-group">
+            <button class="btn-chart" id="moduleBtn">Module-wise Performance</button>
+            <button class="btn-chart" id="quizBtn">Quiz-wise Performance</button>
+        </div>
+    </div>
+
+    <!-- Module-wise Quiz Table -->
+    {% set current_module = None %}
+    {% for quiz in quizzes %}
+        {% if current_module != quiz.module_name %}
+            {% if not loop.first %}
+                </tbody></table>
+            {% endif %}
+            <h4>{{ quiz.module_name }}</h4>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Quiz Title</th>
+                            <th>Score</th>
+                            <th>Total Questions</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            {% set current_module = quiz.module_name %}
+        {% endif %}
+        <tr>
+            <td>{{ quiz.quiz_title }}</td>
+            <td>{{ quiz.score }}</td>
+            <td>{{ quiz.total_questions }}</td>
+            <td>{{ ((quiz.score / quiz.total_questions) * 100)|round(2) }}%</td>
+        </tr>
+        {% if loop.last %}
+            </tbody></table>
+        </div>
+        {% endif %}
+    {% endfor %}
+
+</div>
+
+<!-- Module Chart Modal -->
+<div id="moduleModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeModule">&times;</span>
+        <h4>Module-wise Average Scores</h4>
         <canvas id="moduleChart"></canvas>
     </div>
+</div>
 
-    <!-- Quiz Attempts -->
-    <div class="chart-card">
-        <h5>Quiz Attempts</h5>
+<!-- Quiz Chart Modal -->
+<div id="quizModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeQuiz">&times;</span>
+        <h4>Quiz-wise Scores</h4>
         <canvas id="quizChart"></canvas>
-    </div>
-
-    <!-- Average Quiz Scores -->
-    <div class="chart-card">
-        <h5>Average Scores per Quiz</h5>
-        <canvas id="scoreChart"></canvas>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Ensure proper JS arrays
-    const modulesLabels = {{ modules_labels | tojson }};
-    const modulesScores = {{ modules_scores | tojson }};
-    const quizzesLabels = {{ quizzes_labels | tojson }};
-    const quizzesAttempts = {{ quizzes_attempts | tojson }};
-    const quizzesAvgScores = {{ quizzes_avg_scores | tojson }};
+    // Get modal elements
+    const moduleModal = document.getElementById("moduleModal");
+    const quizModal = document.getElementById("quizModal");
 
-    // Module Performance Chart
+    // Get buttons
+    const moduleBtn = document.getElementById("moduleBtn");
+    const quizBtn = document.getElementById("quizBtn");
+
+    // Get close spans
+    const closeModule = document.getElementById("closeModule");
+    const closeQuiz = document.getElementById("closeQuiz");
+
+    // Open modals
+    moduleBtn.onclick = () => moduleModal.style.display = "block";
+    quizBtn.onclick = () => quizModal.style.display = "block";
+
+    // Close modals
+    closeModule.onclick = () => moduleModal.style.display = "none";
+    closeQuiz.onclick = () => quizModal.style.display = "none";
+
+    // Close when clicking outside modal
+    window.onclick = function(event) {
+        if (event.target == moduleModal) moduleModal.style.display = "none";
+        if (event.target == quizModal) quizModal.style.display = "none";
+    }
+
+    // Module Chart
     const moduleCtx = document.getElementById('moduleChart').getContext('2d');
     new Chart(moduleCtx, {
         type: 'bar',
         data: {
-            labels: modulesLabels,
+            labels: {{ modules_labels|safe }},
             datasets: [{
-                label: 'Average Score (%)',
-                data: modulesScores,
-                backgroundColor: 'rgba(102, 126, 234, 0.7)',
-                borderColor: 'rgba(102, 126, 234, 1)',
+                label: 'Average Score',
+                data: {{ modules_scores|safe }},
+                backgroundColor: 'rgba(102,126,234,0.7)',
+                borderColor: 'rgba(102,126,234,1)',
                 borderWidth: 1
             }]
         },
-        options: { 
-            responsive:true, 
-            scales: { y: { beginAtZero:true, max:100 } } 
-        }
+        options: { responsive:true, scales: { y: { beginAtZero:true, max:100 } } }
     });
 
-    // Quiz Attempts Chart
+    // Quiz Chart
     const quizCtx = document.getElementById('quizChart').getContext('2d');
     new Chart(quizCtx, {
-        type: 'pie',
-        data: {
-            labels: quizzesLabels,
-            datasets: [{
-                data: quizzesAttempts,
-                backgroundColor: [
-                    'rgba(102,126,234,0.7)',
-                    'rgba(118,75,162,0.7)',
-                    'rgba(0,198,255,0.7)',
-                    'rgba(255,159,64,0.7)',
-                    'rgba(255,99,132,0.7)'
-                ]
-            }]
-        },
-        options: { responsive:true }
-    });
-
-    // Average Scores Chart
-    const scoreCtx = document.getElementById('scoreChart').getContext('2d');
-    new Chart(scoreCtx, {
         type: 'line',
         data: {
-            labels: quizzesLabels,
+            labels: {{ quizzes_labels|safe }},
             datasets: [{
-                label: 'Average Score (%)',
-                data: quizzesAvgScores,
+                label: 'Score (%)',
+                data: {{ quizzes_scores|safe }},
                 backgroundColor: 'rgba(102,126,234,0.2)',
                 borderColor:'rgba(102,126,234,1)',
                 fill:true,
                 tension:0.3
             }]
         },
-        options: { 
-            responsive:true, 
-            scales:{ y:{ beginAtZero:true, max:100 } } 
-        }
+        options: { responsive:true, scales:{ y:{ beginAtZero:true, max:100 } } }
     });
 </script>
 {% endblock %}
