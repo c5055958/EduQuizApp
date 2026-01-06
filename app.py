@@ -351,6 +351,7 @@ def add_quiz():
 
     return render_template("add_quiz.html", module=module)
 
+# add questions
 
 @app.route("/admin/add-questions/<int:quiz_id>", methods=["GET", "POST"])
 def add_questions(quiz_id):
@@ -412,6 +413,7 @@ def select_quiz_for_publish():
         action="publish_quiz"
     )
 
+# admin select quiz for questions
 @app.route("/admin/select-quiz-for-questions")
 def select_quiz_for_questions():
     if session.get("role") != "admin":
@@ -426,7 +428,7 @@ def select_quiz_for_questions():
         action="add_questions"
     )
 
-
+# select quiz for result
 @app.route("/admin/select-quiz-for-results")
 def select_quiz_for_results():
     if session.get("role") != "admin":
@@ -442,6 +444,7 @@ def select_quiz_for_results():
     )
 
 
+# admin view results
 @app.route("/admin/view-results/<int:quiz_id>")
 def view_results(quiz_id):
     if session.get("role") != "admin":
@@ -458,6 +461,7 @@ def view_results(quiz_id):
     )
 
 
+# manage modules
 @app.route("/admin/modules")
 def manage_modules():
     if session.get("role") != "admin":
@@ -470,6 +474,7 @@ def manage_modules():
         modules=modules
     )
 
+# manage the module quizes by admin
 @app.route("/admin/module/<int:module_id>/quizzes")
 def module_quizzes_admin(module_id):
     if session.get("role") != "admin":
@@ -484,6 +489,7 @@ def module_quizzes_admin(module_id):
         module=module  
     )
 
+# admin view quiz questions
 @app.route("/admin/view-questions/<int:quiz_id>")
 def view_quiz_questions(quiz_id):
     if session.get("role") != "admin":
@@ -499,6 +505,7 @@ def view_quiz_questions(quiz_id):
         questions=questions
     )
 
+# admin edit the questions
 @app.route("/admin/edit-question/<int:question_id>", methods=["GET", "POST"])
 def edit_question(question_id):
     if session.get("role") != "admin":
@@ -534,6 +541,7 @@ def edit_question(question_id):
     return render_template("edit_question.html", question=question)
 
 
+# admin can delete the question
 @app.route("/admin/delete-question/<int:question_id>")
 def delete_question(question_id):
     if session.get("role") != "admin":
@@ -550,6 +558,7 @@ def delete_question(question_id):
     return redirect(url_for("view_quiz_questions", quiz_id=quiz_id))
 
 
+# admin can see the results
 @app.route("/admin/results")
 def admin_results():
     if session.get("role") != "admin":
@@ -562,6 +571,7 @@ def admin_results():
         results=results
     )
 
+# admin can select the module for quiz
 @app.route("/admin/select-module-for-quiz")
 def select_module_for_quiz():
     if session.get("role") != "admin":
@@ -576,6 +586,7 @@ def select_module_for_quiz():
     )
 
 
+# student dashboard
 @app.route("/student-dashboard")
 def student_dashboard():
     if session.get("role") != "student":
@@ -608,6 +619,7 @@ def student_dashboard():
     )
 
 
+# student can select the module
 @app.route("/student/modules")
 def student_modules():
     if session.get("role") != "student":
@@ -621,6 +633,7 @@ def student_modules():
     )
 
 
+# student can select the quiz
 @app.route("/student/active-quizzes")
 def student_active_quizzes():
     if session.get("role") != "student":
@@ -634,6 +647,7 @@ def student_active_quizzes():
     )
 
 
+# student can attempt the quiz
 @app.route("/student/attempt-quiz/<int:quiz_id>", methods=["GET", "POST"])
 def attempt_quiz(quiz_id):
     if session.get("role") != "student":
@@ -649,6 +663,7 @@ def attempt_quiz(quiz_id):
     )
 
 
+# student can see quiz result
 import json
 
 @app.route("/student/quiz-result/<int:quiz_id>")
@@ -672,6 +687,7 @@ def quiz_result(quiz_id):
     )
 
 
+# student can submit the quiz
 @app.route("/student/submit-quiz/<int:quiz_id>", methods=["POST"])
 def submit_quiz(quiz_id):
     if session.get("role") != "student":
@@ -704,6 +720,7 @@ def submit_quiz(quiz_id):
 
 
 
+# student can see the results
 @app.route("/student/results")
 def student_results():
     if session.get("role") != "student":
@@ -717,6 +734,7 @@ def student_results():
     )
 
 
+# student can select module quiz results
 @app.route("/student/module/<int:module_id>/quizzes")
 def module_quizzes(module_id):
     if session.get("role") != "student":
@@ -729,6 +747,7 @@ def module_quizzes(module_id):
         quizzes=quizzes
     )
 
+# admin students details
 @app.route("/admin/students")
 def admin_students():
     if session.get("role") != "admin":
@@ -741,6 +760,7 @@ def admin_students():
         students=students
     )
 
+# admin can delete the student
 @app.route("/admin/delete-student/<int:student_id>", methods=["POST"])
 def delete_student(student_id):
     if session.get("role") != "admin":
@@ -756,7 +776,7 @@ def delete_student(student_id):
     return redirect(url_for("admin_students"))
 
 
-
+# admin can see the student details
 @app.route("/admin/student/<int:student_id>")
 def admin_student_detail(student_id):
     if session.get("role") != "admin":
@@ -803,6 +823,7 @@ def admin_student_detail(student_id):
     )
 
 
+# admin information
 @app.route("/admin/info")
 def admin_info():
     if session.get("role") != "admin":
@@ -825,6 +846,7 @@ def admin_info():
     )
 
 
+# admin charts
 @app.route("/admin/statistics")
 def admin_statistics():
     if session.get("role") != "admin":
