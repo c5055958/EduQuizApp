@@ -7,6 +7,8 @@ from flask_mail import Mail, Message
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
+# DB methods 
+
 from db.db import (
     get_total_modules,
     get_total_quizzes,
@@ -101,6 +103,7 @@ def login():
     return render_template("login.html")
 
 
+#  OTP Verification code 
 from flask_mail import Mail, Message
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -121,6 +124,7 @@ def send_otp_email(to_email, otp):
     mail.send(msg)
 
 
+# Register 
 import re,random 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -159,6 +163,7 @@ def register():
 
     return render_template("register.html")
 
+# verify otp
 @app.route("/verify-otp", methods=["GET", "POST"])
 def verify_otp():
     if request.method == "POST":
@@ -187,6 +192,7 @@ def verify_otp():
     return render_template("verify_otp.html")
 
 
+# student profile
 @app.route("/student/profile")
 def student_profile():
     if session.get("role") != "student":
@@ -204,6 +210,7 @@ def student_profile():
         module_scores=module_scores
     )
 
+# upload profile image 
 from werkzeug.utils import secure_filename
 import os
 import time
@@ -215,6 +222,7 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# edit profile 
 @app.route("/student/edit-profile", methods=["GET", "POST"])
 def edit_profile():
     if session.get("role") != "student":
@@ -258,6 +266,7 @@ def edit_profile():
 
     return render_template("edit_profile.html", student=student)
 
+# verify email with otp if updated
 
 @app.route("/student/verify-otp-update", methods=["GET", "POST"])
 def verify_otp_update():
@@ -302,6 +311,7 @@ def admin_dashboard():
         return render_template("admin_dashboard.html")
     return redirect(url_for("login"))
 
+# add module
 @app.route("/admin/add-module", methods=["GET", "POST"])
 def add_module():
     if session.get("role") != "admin":
@@ -319,6 +329,7 @@ def add_module():
     return render_template("add_module.html")
 
 
+# add quiz
 @app.route("/admin/add-quiz", methods=["GET", "POST"])
 def add_quiz():
     if session.get("role") != "admin":
