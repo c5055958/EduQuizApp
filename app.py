@@ -495,6 +495,9 @@ def edit_question(question_id):
         return redirect(url_for("login"))
 
     question = get_question_by_id(question_id)
+    if not question:
+        flash("Question not found!", "danger")
+        return redirect(url_for("admin_dashboard"))
 
     if request.method == "POST":
         q_text = request.form["question"]
